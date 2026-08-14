@@ -1,0 +1,912 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Many Times Can the Same Distance Appear?</title>
+<meta name="description" content="For eighty years everyone believed Erdős knew the ceiling on unit distances. An AI model disproved him, not with geometry but with deep number theory. Here is the whole story, from a child's puzzle to infinite class field towers.">
+<meta property="og:title" content="How Many Times Can the Same Distance Appear?">
+<meta property="og:description" content="An AI model disproved an 80-year-old conjecture of Erdős, using number fields where a plane's arithmetic runs out. A long read from the puzzle to the proof.">
+<meta property="og:image" content="https://vizuaraai.github.io/unit-distance/assets/og.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<style>
+  :root{
+    --paper:#fcfbf7; --panel:#ffffff; --sink:#f6f4ec;
+    --ink:#16130d; --ink2:#3a352b; --muted:#6d665a; --faint:#a49c8c;
+    --line:#e7e2d5; --line2:#d9d3c3;
+    --slate:#155e8c; --shelf:#c0641a; --good:#1c7a55; --hot:#b3006b;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font:400 19px/1.72 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  nav{position:sticky; top:0; z-index:40; background:rgba(252,251,247,.96);
+    backdrop-filter:blur(10px); border-bottom:1px solid var(--line);}
+  nav .bar{max-width:1080px; margin:0 auto; padding:0 24px; height:58px; display:flex; align-items:center; gap:14px;}
+  nav .mark{display:flex; align-items:center; gap:11px; text-decoration:none; color:var(--ink); min-width:0}
+  nav .mark img{width:26px; height:26px; display:block}
+  nav .mark span{font:600 15px/1.2 var(--sans); letter-spacing:.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  nav .mark small{display:block; font:500 11.5px/1.3 var(--sans); color:var(--faint); letter-spacing:.06em; text-transform:uppercase}
+  nav .navlinks{margin-left:auto; display:flex; gap:8px; align-items:center}
+  nav .navlinks a{color:var(--ink2); text-decoration:none; font:600 13.5px/1 var(--sans); padding:8px 13px; border-radius:99px; white-space:nowrap;}
+  nav .navlinks a:hover{background:var(--sink); color:var(--slate)}
+  nav .navlinks a.pill{border:1px solid var(--line2)}
+  nav .navlinks a.pill:hover{border-color:var(--slate)}
+  nav .navlinks a.gh{display:inline-flex; align-items:center; gap:7px}
+  @media(max-width:640px){ nav .navlinks a.hidesm{display:none} }
+  #progress{position:absolute; left:0; bottom:-1px; height:2px; background:var(--slate); width:0%}
+  .art{max-width:720px; margin:0 auto; padding:0 24px}
+  .wide{max-width:940px; margin-left:auto; margin-right:auto; padding:0 24px}
+  header.hero{padding:72px 0 8px}
+  .kicker{font:600 12.5px/1 var(--sans); letter-spacing:.18em; text-transform:uppercase; color:var(--hot); margin-bottom:22px}
+  h1{font-size:clamp(36px,5.6vw,56px); line-height:1.1; margin:0 0 20px; font-weight:600; letter-spacing:-.012em}
+  .dek{font-size:clamp(20px,2.5vw,24px); line-height:1.5; color:var(--muted); font-style:italic; margin:0 0 30px}
+  .byline{display:flex; align-items:center; gap:13px; font:500 15px/1.4 var(--sans); color:var(--ink2); padding-bottom:8px}
+  .byline img{width:38px; height:38px}
+  .byline .dot{color:var(--faint)}
+  .byline a{color:var(--slate); text-decoration:none}
+  h2{font-size:clamp(25px,3.2vw,31px); line-height:1.25; margin:64px 0 18px; font-weight:600; letter-spacing:-.008em}
+  h3{font-size:21px; margin:40px 0 12px; font-weight:600}
+  p{margin:0 0 22px}
+  a{color:var(--slate)}
+  em{font-style:italic}
+  .pull{border-left:4px solid var(--hot); background:var(--sink); padding:20px 26px; margin:34px 0; font-size:20.5px; line-height:1.55;}
+  .aside{font-size:16px; color:var(--muted); font-style:italic}
+  .toc{background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:24px 28px 18px; margin:40px 0 6px}
+  .toc .toc-title{font:600 12.5px/1 var(--sans); letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin-bottom:16px}
+  .toc ol{margin:0; padding:0; list-style:none; columns:2; column-gap:40px}
+  .toc li{break-inside:avoid; margin:0 0 10px}
+  .toc a{font:500 15.5px/1.45 var(--sans); color:var(--ink2); text-decoration:none; display:block; padding-left:24px; text-indent:-24px}
+  .toc a:hover{color:var(--slate)}
+  .toc .n{font:600 12px/1 var(--mono); color:var(--faint); display:inline-block; width:24px; text-indent:0}
+  @media(max-width:620px){.toc ol{columns:1}}
+  hr.sep{border:0; border-top:1px solid var(--line); margin:64px auto; max-width:720px}
+  figure.vm{margin:36px 0; background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:20px 20px 16px}
+  figure.vm figcaption{font:400 15px/1.55 var(--sans); color:var(--muted); margin-top:12px}
+  figure.vm figcaption b{color:var(--ink2)}
+  .chartbox{position:relative}
+  .chart-scroll{overflow-x:auto}
+  .chart-scroll svg{display:block}
+  .chips{display:flex; flex-wrap:wrap; gap:14px 20px; margin:2px 2px 12px; font:500 13.5px/1 var(--sans); color:var(--ink2)}
+  .chips span{display:inline-flex; align-items:center; gap:7px}
+  .chips i{width:14px; height:4px; border-radius:2px; display:inline-block}
+  .chips i.dotk{width:9px; height:9px; border-radius:50%}
+  .tip{position:absolute; pointer-events:none; z-index:5; display:none; background:var(--ink); color:#fdfcf9; border-radius:6px; padding:8px 11px; font:500 12.5px/1.5 var(--sans); white-space:nowrap; box-shadow:0 4px 14px rgba(20,16,8,.18);}
+  .tip b{font-family:var(--mono); font-weight:600}
+  .replay{position:absolute; right:10px; top:8px; z-index:6; font:600 12px/1 var(--sans); color:var(--muted); background:var(--sink); border:1px solid var(--line2); border-radius:99px; padding:6px 12px; cursor:pointer;}
+  .replay:hover{color:var(--slate); border-color:var(--slate)}
+  svg text{font-family:var(--sans)}
+  svg .num{font-family:var(--mono)}
+  .statline{display:flex; flex-wrap:wrap; gap:14px 40px; margin:26px 0}
+  .statline .v{font:600 34px/1.1 var(--mono); letter-spacing:-.02em}
+  .statline .k{font:400 14px/1.45 var(--sans); color:var(--muted); max-width:240px; margin-top:4px}
+  .two{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin:28px 0}
+  @media(max-width:700px){.two{grid-template-columns:1fr}}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:20px 22px}
+  .card h4{margin:0 0 10px; font:600 16px/1.3 var(--sans)}
+  .card.known{border-top:3px solid var(--faint)}
+  .card.new{border-top:3px solid var(--slate)}
+  .card ul{margin:0; padding-left:19px; font-size:16.5px; line-height:1.6}
+  .card li{margin:7px 0}
+  ul.lims{max-width:none; padding-left:21px}
+  ul.lims li{margin:12px 0}
+  .widgetui{display:flex; flex-wrap:wrap; gap:16px 26px; align-items:center; padding:10px 4px 2px; font:500 13.5px/1.5 var(--sans); color:var(--ink2)}
+  .widgetui label{flex:1; min-width:240px}
+  .widgetui input[type=range]{width:100%; accent-color:#155e8c}
+  .presets{display:flex; gap:8px; flex-wrap:wrap}
+  .presets button{font:600 12px/1 var(--sans); color:var(--muted); background:var(--sink); border:1px solid var(--line2); border-radius:99px; padding:7px 12px; cursor:pointer}
+  .presets button:hover{color:var(--slate); border-color:var(--slate)}
+  video{width:100%; border:1px solid var(--line); border-radius:6px; background:#000; display:block}
+  .filmframe{position:relative; aspect-ratio:16/9; width:100%; cursor:pointer; border:1px solid var(--line); border-radius:6px; overflow:hidden; background:#000}
+  .filmframe img{width:100%; height:100%; object-fit:cover; display:block}
+  .filmframe .playbtn{position:absolute; left:50%; top:50%; width:84px; height:84px; transform:translate(-50%,-50%); border-radius:50%; background:rgba(22,19,13,.82); box-shadow:0 6px 24px rgba(20,16,8,.35); transition:background .15s}
+  .filmframe .playbtn::after{content:''; position:absolute; left:55%; top:50%; transform:translate(-50%,-50%); border-style:solid; border-width:15px 0 15px 25px; border-color:transparent transparent transparent #fdfcf9}
+  .filmframe:hover .playbtn{background:var(--slate)}
+  pre{background:var(--sink); border:1px solid var(--line); border-radius:6px; padding:16px 18px; overflow-x:auto; font-size:14px; line-height:1.6; font-family:var(--mono)}
+  code{font-family:var(--mono); font-size:.92em; background:var(--sink); padding:1px 5px; border-radius:4px}
+  table{border-collapse:collapse; width:100%; background:var(--panel); font-size:16px}
+  .tablewrap{overflow-x:auto; margin:26px 0; border:1px solid var(--line); border-radius:6px}
+  th,td{padding:11px 14px; text-align:left; border-bottom:1px solid var(--line)}
+  tr:last-child td{border-bottom:0}
+  th{font:600 12.5px/1.3 var(--sans); letter-spacing:.05em; text-transform:uppercase; color:var(--muted); background:var(--sink)}
+  td.num{text-align:right; font-family:var(--mono); font-variant-numeric:tabular-nums}
+  footer{padding:56px 0 80px; color:var(--muted); font:400 15px/1.6 var(--sans)}
+  footer img{width:30px; height:30px; margin-bottom:12px}
+  footer a{color:var(--slate); text-decoration:none}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="bar">
+    <a class="mark" href="#top">
+      <img src="assets/vizuara-logo.png" alt="Vizuara">
+      <span>Vizuara Research<small>unit distance</small></span>
+    </a>
+    <div class="navlinks">
+      <a href="#film" class="hidesm">The film</a>
+      <a href="https://github.com/VizuaraAI/unit-distance" class="hidesm gh">
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+        GitHub</a>
+      <a href="assets/unit-distance-remarks.pdf" class="pill">Paper&nbsp;PDF</a>
+    </div>
+  </div>
+  <div id="progress"></div>
+</nav>
+
+<header class="hero art" id="top">
+  <div class="kicker">Vizuara Research &middot; Discrete geometry</div>
+  <h1>How many times can the same distance appear?</h1>
+  <p class="dek">A child can ask it: scatter dots on a page and connect every pair
+  the same distance apart, how many lines can you draw? Paul Erdős asked it in
+  1946, guessed the answer, and for eighty years everyone believed him. In 2026 a
+  machine proved him wrong, not with geometry, but with number theory reached for
+  down a path humans had dismissed.</p>
+  <div class="byline">
+    <img src="assets/vizuara-logo.png" alt="">
+    <div>Vizuara Research <span class="dot">&middot;</span> August 2026
+      <span class="dot">&middot;</span> 13 min read
+      <span class="dot">&middot;</span> <a href="#film">or watch the 3&#8209;minute film</a></div>
+  </div>
+</header>
+
+<div class="art">
+
+  <div class="toc" role="navigation" aria-label="Table of contents">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><a href="#puzzle"><span class="n">1</span>A puzzle a child could pose</a></li>
+      <li><a href="#rich"><span class="n">2</span>The trick is a rich distance</a></li>
+      <li><a href="#sos"><span class="n">3</span>Why some distances are rich</a></li>
+      <li><a href="#ceiling"><span class="n">4</span>The ceiling everyone believed</a></li>
+      <li><a href="#prize"><span class="n">5</span>One line, a prize, eighty years</a></li>
+      <li><a href="#machine"><span class="n">6</span>The answer came from a machine</a></li>
+      <li><a href="#numbers"><span class="n">7</span>Leave the plane for a number field</a></li>
+      <li><a href="#shadow"><span class="n">8</span>The shadow of a higher lattice</a></li>
+      <li><a href="#towers"><span class="n">9</span>Where the richness comes from</a></li>
+      <li><a href="#margin"><span class="n">10</span>False by a hair</a></li>
+      <li><a href="#film"><span class="n">11</span>The film</a></li>
+      <li><a href="#prior"><span class="n">12</span>Where this sits in prior work</a></li>
+      <li><a href="#limits"><span class="n">13</span>What this does not show</a></li>
+      <li><a href="#appendix"><span class="n">14</span>Appendix: two squares from scratch</a></li>
+      <li><a href="#repro"><span class="n">15</span>Reproduce it</a></li>
+    </ol>
+  </div>
+
+  <p style="margin-top:36px">Take a hundred dots and place them anywhere on a sheet
+  of paper. Pick a distance, say one inch, and draw a line between every pair of
+  dots that happens to be exactly that far apart. Some arrangements give you only
+  a handful of lines; others give you a great many. The question Erdős asked is the
+  greediest possible version: over all arrangements of <em>n</em> dots, what is the
+  largest number of these <em>unit distances</em> you can force to appear at once?</p>
+
+  <p>Write that maximum as <span class="num">U(n)</span>. It is one of the most
+  famous unsolved problems in combinatorial geometry, and part of its fame is that
+  the question is so plain. A ten-year-old understands it in a sentence. Yet the
+  answer turns out to touch number theory so deep that only a handful of people
+  alive can follow every step.</p>
+
+  <h2 id="puzzle">A puzzle a child could pose</h2>
+
+  <p>The picture below is the object itself. Every dot sits on a triangular grid,
+  and a line is drawn only between two dots exactly one unit apart. This is called
+  the <em>unit distance graph</em> of the point set. Count the lines as they draw
+  in: even a small, tidy arrangement produces far more of them than there are
+  dots.</p>
+</div>
+
+<div class="wide">
+  <figure class="vm">
+    <div class="chartbox" id="fig-graph"></div>
+    <figcaption><b>The unit distance graph.</b> Ninety-nine dots on a triangular
+    grid; a line joins every pair exactly one unit apart. Each interior dot has
+    six such neighbors, so the lines pile up quickly. The counter is the true
+    number of unit distances in this arrangement. The whole of Erdős's problem is:
+    how large can that counter grow, per dot, as the number of dots increases?</figcaption>
+  </figure>
+</div>
+
+<div class="art">
+  <p>So the quantity to understand is not the number of dots but the number of
+  lines <em>per dot</em>. If every dot could be joined to a fixed number of others,
+  U(n) would grow like <span class="num">n</span>, in proportion to the dots. The
+  entire drama of the problem lives in whether you can do meaningfully better than
+  that, and if so, by how much.</p>
+
+  <h2 id="rich">The trick is to choose a rich distance</h2>
+
+  <p>Erdős found the first good construction himself, and it is worth seeing
+  because everything that came eighty years later is a descendant of it. Put the
+  dots on an ordinary square grid of whole-number coordinates. Now the number of
+  unit distances depends entirely on one clever choice: which distance you call
+  "one".</p>
+
+  <p>Suppose you set the unit to be the square root of some whole number
+  <span class="num">m</span>. Then two grid points are one unit apart exactly when
+  the horizontal and vertical steps between them, call them <span class="num">a</span>
+  and <span class="num">b</span>, satisfy <span class="num">a² + b² = m</span>. So
+  the number of neighbors a single dot has is the number of ways to write
+  <span class="num">m</span> as a sum of two squares. Choose an
+  <span class="num">m</span> that can be written many ways, and every dot in the
+  grid suddenly has a crowd of partners at exactly distance one.</p>
+
+  <div class="pull">The engine of the whole subject is an arithmetic fact dressed
+  as geometry: a single point has one unit-distance neighbor for every way its
+  squared length can be written as a sum of two squares.</div>
+
+  <h2 id="sos">Why some distances are rich and others are poor</h2>
+
+  <p>The interactive figure makes this concrete. Fix a center dot at the origin of
+  a grid and draw the circle whose radius squared is <span class="num">N</span>.
+  Every grid point the circle passes through is one unit-distance neighbor of the
+  center. Drag the slider, or press a preset, and watch how wildly the count
+  swings: most values of <span class="num">N</span> give none or a few, but the
+  right ones give a dozen, then sixteen, then thirty-two.</p>
+</div>
+
+<div class="wide">
+  <figure class="vm">
+    <div class="chartbox" id="fig-sos"></div>
+    <figcaption><b>Sum of two squares, live.</b> The count is
+    <span class="num">r₂(N)</span>, the number of integer points on the circle of
+    radius <span class="num">√N</span>. It is 4 at <span class="num">N=1</span>,
+    8 at <span class="num">N=5</span> (because 5 = 1²+2²), 12 at
+    <span class="num">N=25</span> (25 = 3²+4² = 5²+0²), and it keeps climbing as
+    you multiply together primes of the form 4k+1. The richest distances are built
+    from many such primes at once. That is the lever Erdős pulled.</figcaption>
+  </figure>
+</div>
+
+<div class="art">
+  <p>How rich can it get? Multiply together the first several primes that are one
+  more than a multiple of four, primes like 5, 13, 17, 29, and the number of
+  representations doubles with each one you add. The catch is that these primes
+  grow, so the whole number <span class="num">m</span> grows fast too, and you need
+  a grid large enough to hold it. Working the trade-off out, Erdős showed that
+  <span class="num">n</span> points can be arranged to have about
+  <span class="num">n<sup>1+c/log log n</sup></span> unit distances. That exponent
+  is a shade more than one, and it creeps upward with <span class="num">n</span>,
+  but agonizingly slowly. The double logarithm is the arithmetic of the plane
+  running out of room.</p>
+
+  <p>There is a cleaner way to say what this construction is, and it is the door
+  through which the new proof walks. The grid of whole-number points is the ring of
+  <em>Gaussian integers</em>, the complex numbers <span class="num">a + bi</span>
+  with <span class="num">a</span> and <span class="num">b</span> whole. Distances
+  between grid points are absolute values of differences of Gaussian integers, and
+  a rich unit distance is a Gaussian integer of that length written many ways. Hold
+  that thought: the plane is one particular number system, and its arithmetic is
+  what limits Erdős's trick.</p>
+
+  <h2 id="ceiling">The ceiling everyone believed</h2>
+
+  <p>On the other side sits the best proven upper bound. In 1984 Spencer,
+  Szemerédi and Trotter proved that <span class="num">n</span> points can have at
+  most about <span class="num">n<sup>4/3</sup></span> unit distances, a clean
+  geometric ceiling that has never been improved. So the truth about
+  <span class="num">U(n)</span> lives somewhere in the gap between "a shade above
+  <span class="num">n</span>" and <span class="num">n<sup>4/3</sup></span>.</p>
+
+  <p>Erdős had a firm opinion about where in that gap the truth lay. He conjectured
+  that <span class="num">U(n)</span> is at most <span class="num">n<sup>1+o(1)</sup></span>:
+  in words, that his own grid was essentially the best you could ever do, and that
+  the true exponent sits at the very bottom of the gap, indistinguishable from one.
+  The chart shows the landscape and the pin.</p>
+</div>
+
+<div class="wide">
+  <figure class="vm">
+    <div class="chips" id="fig-bounds-legend"></div>
+    <div class="chartbox" id="fig-bounds"></div>
+    <figcaption><b>The landscape of the problem.</b> Drawn on doubly-logarithmic
+    axes so that a pure power of <span class="num">n</span> is a straight line. The
+    proven ceiling <span class="num">n<sup>4/3</sup></span> is the steep dashed
+    line; Erdős's grid and his conjecture both hug the shallow line near
+    <span class="num">n</span>. The conjecture is the claim that the truth never
+    escapes the neighborhood of that shallow line. The disproof is a single fact:
+    it does escape.</figcaption>
+  </figure>
+</div>
+
+<div class="art">
+  <h2 id="prize">One line in a paper, a prize, and eighty years of trying</h2>
+
+  <p>The problem carried real weight. Erdős offered money for it, eventually 500
+  dollars, and it is problem number 90 on the community's register of his questions
+  at erdosproblems.com. Brass, Moser and Pach call it "possibly the best known and
+  simplest to explain problem in combinatorial geometry." Almost everyone who
+  worked on it believed the conjecture was true, and so, as Thomas Bloom notes in
+  the paper, nearly all the human effort went into trying to <em>prove</em> the
+  ceiling, not to break it. Erdős himself once wrote that a bound of
+  <span class="num">n<sup>1+o(1)</sup></span> would be "very difficult to prove" if
+  true, hinting he could imagine being wrong, but the decades of failed
+  improvements only hardened the belief.</p>
+
+  <div class="statline">
+    <div><div class="v">1946</div><div class="k">Erdős raises the unit distance problem</div></div>
+    <div><div class="v" style="color:var(--shelf)">$500</div><div class="k">the prize attached to it, problem #90</div></div>
+    <div><div class="v">n<sup style="font-size:.6em">4/3</sup></div><div class="k">best proven upper bound, since 1984</div></div>
+    <div><div class="v" style="color:var(--slate)">~80 yr</div><div class="k">the conjecture stood, believed true</div></div>
+  </div>
+
+  <h2 id="machine">The answer came from a machine</h2>
+
+  <p>In May 2026 the answer arrived, and it did not come from a mathematician. An
+  internal reasoning model at OpenAI, given the bare problem, produced an original
+  argument that <em>disproves</em> the conjecture. Its output was a proof of roughly
+  a hundred and twenty-five pages. Nine mathematicians, Noga Alon, Thomas Bloom,
+  Timothy Gowers, Daniel Litt, Will Sawin, Arul Shankar, Jacob Tsimerman, Victor
+  Wang and Melanie Matchett Wood, then read it, checked every step, and digested it
+  down to a clean argument of a few pages. That digested version is
+  <a href="assets/unit-distance-remarks.pdf">the paper this article follows</a>.</p>
+
+  <p>Here is exactly what was proven, stated plainly.</p>
+
+  <div class="two">
+    <div class="card known">
+      <h4>What was believed (Erdős, and nearly everyone)</h4>
+      <ul>
+        <li>U(n) is at most <span class="num">n<sup>1+o(1)</sup></span>.</li>
+        <li>The exponent creeps above one only by a vanishing amount.</li>
+        <li>The square grid is, in essence, the best construction.</li>
+      </ul>
+    </div>
+    <div class="card new">
+      <h4>What is now proven (Theorem 1.1)</h4>
+      <ul>
+        <li>There is a fixed <span class="num">ε &gt; 0</span> and arrangements of
+        <span class="num">n</span> points with at least
+        <span class="num">n<sup>1+ε</sup></span> unit distances, for
+        <span class="num">n</span> as large as you like.</li>
+        <li>So the exponent is bounded strictly away from one. The conjecture is
+        false.</li>
+        <li>The construction is not a grid at all.</li>
+      </ul>
+    </div>
+  </div>
+
+  <p>Gowers, a Fields medalist, wrote that he would have recommended the paper for
+  the <em>Annals of Mathematics</em>, the field's most selective journal, "without
+  any hesitation," and called it "a milestone in AI mathematics." Alon called the
+  result "an outstanding achievement."</p>
+
+  <h2 id="numbers">Leave the plane for a stranger number field</h2>
+
+  <p>The idea is best seen as a generalization of Erdős's own. Recall that his grid
+  is the Gaussian integers, and that the richness of a distance is how many ways a
+  number in that system is a sum of two squares. That richness grows only like the
+  double logarithm because the plane's arithmetic, the arithmetic of
+  <span class="num">a + bi</span>, is fixed and modest.</p>
+
+  <p>The model's move is to stop fixing the number system. Instead of the Gaussian
+  integers, it works inside the whole numbers of a larger
+  <em>number field</em>, a self-contained arithmetic world built by adjoining new
+  algebraic numbers to the rationals, and it lets that world grow. In a field of
+  higher and higher <em>degree</em>, the analog of "sum of two squares" can be
+  written not in a doubly-logarithmic number of ways but in a number of ways that
+  grows <em>exponentially</em> in the degree. The lever Erdős pulled a little, the
+  model pulls arbitrarily hard.</p>
+
+  <div class="pull">Erdős varied which integer he used and kept the number system
+  fixed. The machine kept a small set of primes fixed and varied the number system,
+  letting its degree run to infinity. That inversion is the whole idea.</div>
+
+  <p>One subtlety, flagged by Will Sawin, is why the degree has to grow rather than
+  staying fixed at some clever field. If you fix a field, the prime-counting that
+  governs the construction just reproduces Erdős's bound; there is no advantage.
+  The gain only appears when you take a <em>sequence</em> of fields of growing
+  degree while keeping their arithmetic complexity, their <em>root discriminant</em>,
+  under control. Producing such a sequence is the hard part, and it is where class
+  field theory enters.</p>
+
+  <h2 id="shadow">The construction is the shadow of a higher lattice</h2>
+
+  <p>How does arithmetic in a high-degree field become dots in a flat plane? The
+  whole numbers of a field of degree <span class="num">f</span> naturally live as a
+  lattice in a space of dimension <span class="num">f</span>, not in two dimensions.
+  To get a planar point set you fix one way of viewing that field inside the complex
+  numbers and project: you cast the shadow of the high-dimensional lattice down onto
+  the plane. Two projected points are one unit apart when the corresponding field
+  elements differ by an algebraic number of absolute value exactly one. Because the
+  field is chosen so that a great many of its elements have absolute value one, and
+  they arise as differences within a bounded window, the shadow is dense with unit
+  distances, denser than the plane's own arithmetic could ever be.</p>
+</div>
+
+<div class="wide">
+  <figure class="vm">
+    <div class="chartbox" id="fig-shadow"></div>
+    <figcaption><b>From a high dimension down to the page.</b> A lattice living in
+    many dimensions (drawn here tilted, above) is projected straight down onto a
+    line standing in for the plane. The many elements of absolute value one become
+    many pairs of projected points at the same distance. The richness that Erdős
+    could only coax out of the plane is imported wholesale from a bigger world and
+    dropped onto the flat page.</figcaption>
+  </figure>
+</div>
+
+<div class="art">
+  <p>For the fields to be usable the projection has to be well behaved, and the
+  field has to be of a special type, a <em>CM field</em>, so that an element of
+  absolute value one in a single view has absolute value one in all views at once.
+  That is what lets the counting close. The construction then reads off a sequence
+  of planar point sets, one for each field in the tower, with more and more unit
+  distances per point.</p>
+
+  <h2 id="towers">Where the exploding richness comes from</h2>
+
+  <p>The remaining question is whether fields of growing degree, bounded arithmetic
+  complexity, and enough elements of absolute value one actually exist. They do, and
+  the tool is a classical and beautiful one: <em>infinite class field towers</em>.
+  A theorem of Golod and Shafarevich, from the 1960s, guarantees infinite towers of
+  number fields whose root discriminant stays bounded while the degree marches to
+  infinity. Feeding in a rational prime that splits completely all the way up the
+  tower supplies exactly the abundance of absolute-value-one elements the counting
+  needs. The figure sketches the shape of the argument: a fixed handful of primes
+  seeds a tower, and the useful elements multiply as you climb.</p>
+</div>
+
+<div class="wide">
+  <figure class="vm">
+    <div class="chartbox" id="fig-richness"></div>
+    <figcaption><b>Two ways richness can grow.</b> In the ordinary whole numbers
+    (the plane), the number of representations grows like a slow trickle, the
+    double-logarithm that caps Erdős's grid. Climbing an infinite class field tower
+    of growing degree, the same kind of count grows exponentially. The construction
+    simply needs the crossing to happen, and it does.</figcaption>
+  </figure>
+</div>
+
+<div class="art">
+  <p>That the needed towers exist "is not the novel part of the argument," the
+  authors are careful to say; such towers, and even ones with infinitely many
+  completely split primes, were built long ago. The novelty is the recognition that
+  this well-known machinery answers a question in plane geometry that no one had
+  thought to phrase in its terms. As Melanie Matchett Wood puts it, the work is "a
+  beautiful application of number theory to a natural, concrete question," and a
+  reminder of "how frequently interesting and powerful things happen mathematically
+  when one applies ideas from one field to another."</p>
+
+  <h2 id="margin">False by a hair, but false</h2>
+
+  <p>There is one more fact that gives the result its peculiar character. The
+  construction beats Erdős's ceiling by an almost unimaginably small amount. Worked
+  all the way through, the paper's explicit exponent is
+  <span class="num">1 + 6.24 × 10<sup>−38</sup></span>. That is roughly one part in
+  ten thousand trillion trillion trillion above one. The construction is an
+  existence proof, not a practical recipe: it does not exhibit a small point set you
+  could draw, it proves that arrangements beating the conjecture exist. In
+  mathematics that distinction does not matter. A conjecture that says "at most
+  <span class="num">n<sup>1+o(1)</sup></span>" is refuted the instant a single fixed
+  positive exponent survives, no matter how tiny.</p>
+
+  <div class="statline">
+    <div><div class="v" style="color:var(--slate)">1 + 6.24e&#8209;38</div><div class="k">the proven exponent from equation (2.2)</div></div>
+    <div><div class="v">125</div><div class="k">pages of raw machine proof</div></div>
+    <div><div class="v">9</div><div class="k">mathematicians who digested it to a few</div></div>
+  </div>
+
+  <p>The parameters behind that number are concrete. The paper takes the ramified
+  primes to be <span class="num">T = {3, 5, 7, 11, 13, 17}</span>, a rational prime
+  <span class="num">101</span> that splits completely in the field
+  <span class="num">Q(√5, √13, √17, √21, √33)</span>, and builds its tower from
+  there. None of it is optimized; the exponent only has to clear one.</p>
+
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Quantity</th><th>Meaning</th><th style="text-align:right">Value in the paper</th></tr></thead>
+    <tbody>
+      <tr><td>U(n)</td><td>max unit distances among n points</td><td class="num">the object of study</td></tr>
+      <tr><td>Erdős grid</td><td>lower bound he proved</td><td class="num">n<sup>1+c/log log n</sup></td></tr>
+      <tr><td>Spencer&ndash;Szemerédi&ndash;Trotter</td><td>upper bound, 1984</td><td class="num">O(n<sup>4/3</sup>)</td></tr>
+      <tr><td>Erdős conjecture</td><td>believed ceiling</td><td class="num">n<sup>1+o(1)</sup></td></tr>
+      <tr><td>Theorem 1.1</td><td>the disproof</td><td class="num">&ge; n<sup>1+ε</sup></td></tr>
+      <tr><td>ε, equation (2.2)</td><td>explicit surplus exponent</td><td class="num">6.24 &times; 10<sup>&minus;38</sup></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2 id="film">The film</h2>
+  <p>A three-minute explainer of the whole story, from the child's puzzle to the
+  class field tower, in the calm register of a science documentary.</p>
+</div>
+
+<div class="wide">
+  <figure class="vm">
+    <div class="filmframe" id="filmframe" data-src="assets/film.mp4" data-poster="assets/poster.jpg">
+      <img src="assets/poster.jpg" alt="Play the film" onerror="this.style.display='none'">
+      <div class="playbtn"></div>
+    </div>
+    <figcaption><b>How an AI broke an 80-year-old conjecture.</b> Narrated, with
+    every figure redrawn from the paper. Vizuara Research.</figcaption>
+  </figure>
+</div>
+
+<div class="art">
+  <h2 id="prior">Where this sits in prior work</h2>
+
+  <p>The construction did not fall from the sky; it stands on a tradition of using
+  number fields to build combinatorial objects. Venkatesh used infinite class field
+  towers to construct unusually dense sphere packings; Litsyn and Tsfasman, and
+  later many others, used lattices from such towers to build good error-correcting
+  codes; Kopp and collaborators used ray class fields to build equiangular lines;
+  Belolipetsky and Lubotzky used class field towers to count lattices in Lie groups.
+  Alon, Bucić and Sauermann's recent study of unit and distinct distances under
+  general norms is the nearest neighbor in spirit. The new proof is a fresh member
+  of that family, and, as Arul Shankar observes, it inverts the usual arithmetic
+  statistics: rather than fixing a field and counting split primes, it fixes a prime
+  and counts fields in which it splits.</p>
+
+  <p>Worth reading alongside the paper: the
+  <a href="https://openai.com/index/model-disproves-discrete-geometry-conjecture/">OpenAI announcement</a>,
+  the entry at <a href="https://www.erdosproblems.com/90">erdosproblems.com problem 90</a>,
+  and the community discussion on Gil Kalai's blog.</p>
+
+  <h2 id="limits">What this does not show</h2>
+  <ul class="lims">
+    <li><b>It is not a new geometric idea.</b> As several of the authors note, the
+    proof introduces no new geometric tool of the kind a proof of the conjecture
+    would likely have needed. It is a clever import from number theory, not a new
+    way of seeing the plane.</li>
+    <li><b>The margin is astronomically small and non-constructive.</b> The exponent
+    exceeds one by about <span class="num">6 × 10<sup>−38</sup></span>. No explicit,
+    drawable point set beating the conjecture is produced; the theorem asserts that
+    such sets exist.</li>
+    <li><b>It does not settle the true exponent.</b> The gap between the new lower
+    bound and the <span class="num">n<sup>4/3</sup></span> ceiling remains vast. We
+    now know the truth is not at the very bottom of the gap; we still do not know
+    where in it the truth lies.</li>
+    <li><b>The three-dimensional problem is untouched.</b> The same field-theoretic
+    approach runs into genuine obstacles in dimension three, discussed in the
+    reflections by Sawin and Shankar; the analogous questions there stay open.</li>
+    <li><b>Provenance and citation are unsettled.</b> Matchett Wood raises that a
+    machine "familiar" with the whole literature does not cite the prior work whose
+    ideas it uses the way a human author would, a norm the community still needs to
+    work out.</li>
+  </ul>
+
+  <h2 id="appendix">Appendix: sums of two squares, from scratch</h2>
+
+  <p>Everything in the argument rests on one elementary fact, so it is worth being
+  able to compute it yourself. The number of ways to write a whole number
+  <span class="num">N</span> as an ordered sum of two squares, counting signs and
+  order and zero, is written <span class="num">r₂(N)</span>. There is a clean rule
+  for it. Factor <span class="num">N</span>. Primes of the form
+  <span class="num">4k+3</span> (like 3, 7, 11) must appear to an even power or
+  <span class="num">r₂(N)=0</span>. Otherwise, ignore the factor of two and the
+  <span class="num">4k+3</span> primes, and count the divisors built from the
+  <span class="num">4k+1</span> primes (like 5, 13, 17): if there are
+  <span class="num">d</span> of them, then <span class="num">r₂(N) = 4d</span>.</p>
+
+  <p>So a distance is rich exactly when its square is a product of many distinct
+  primes of the form <span class="num">4k+1</span>. Each such prime doubles the count
+  <span class="num">d</span>. That is why 5 gives 8, why 5·13 gives 16, and why
+  5·13·17 gives 32. The interactive figure above computes exactly this rule by brute
+  force; the table shows a few landmark values.</p>
+
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>N</th><th>factorization</th><th style="text-align:right">r₂(N)</th><th>why</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td class="num">1</td><td class="num">4</td><td>the four axis points</td></tr>
+      <tr><td class="num">5</td><td class="num">5</td><td class="num">8</td><td>one 4k+1 prime</td></tr>
+      <tr><td class="num">25</td><td class="num">5²</td><td class="num">12</td><td>3&sup2;+4&sup2; and 5&sup2;+0&sup2;</td></tr>
+      <tr><td class="num">65</td><td class="num">5 · 13</td><td class="num">16</td><td>two 4k+1 primes</td></tr>
+      <tr><td class="num">325</td><td class="num">5² · 13</td><td class="num">24</td><td>more room</td></tr>
+      <tr><td class="num">1105</td><td class="num">5 · 13 · 17</td><td class="num">32</td><td>three 4k+1 primes</td></tr>
+      <tr><td class="num">21</td><td class="num">3 · 7</td><td class="num">0</td><td>two 4k+3 primes, odd powers</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>The leap of the new proof is to ask the same question not in the whole numbers
+  but in the integers of a number field, where the analog of this doubling can be
+  made to run exponentially in the field's degree. Everything else, the CM
+  condition, the class field tower, the projection, is machinery in service of that
+  one amplified count.</p>
+
+  <h2 id="repro">Reproduce it</h2>
+  <p>The mathematics is fully contained in the digested paper; no code or compute is
+  needed to verify it, only algebraic number theory at the level of a first or
+  second graduate course. That was, the authors note, part of what made checking it
+  feasible.</p>
+  <ul class="lims">
+    <li><b>The paper.</b> "Remarks on the Disproof of the Unit Distance Conjecture,"
+    Alon, Bloom, Gowers, Litt, Sawin, Shankar, Tsimerman, Wang, Wood, 2026.
+    <a href="assets/unit-distance-remarks.pdf">PDF in this repository</a>.</li>
+    <li><b>The original machine proof.</b> Produced by an internal OpenAI reasoning
+    model; see the
+    <a href="https://openai.com/index/model-disproves-discrete-geometry-conjecture/">OpenAI writeup</a>.</li>
+    <li><b>The figures on this page</b> are drawn from the paper's own statements and
+    the elementary <span class="num">r₂</span> rule; the source is the single
+    <code>index.html</code> in
+    <a href="https://github.com/VizuaraAI/unit-distance">the GitHub repository</a>.</li>
+  </ul>
+</div>
+
+<hr class="sep">
+
+<footer class="art">
+  <img src="assets/vizuara-logo.png" alt="Vizuara">
+  <div>A Vizuara Research explainer, following the paper by Noga Alon, Thomas F.
+  Bloom, W. T. Gowers, Daniel Litt, Will Sawin, Arul Shankar, Jacob Tsimerman,
+  Victor Wang, and Melanie Matchett Wood.</div>
+  <div style="margin-top:10px">
+    <a href="assets/unit-distance-remarks.pdf">Paper PDF</a> &middot;
+    <a href="#film">The film</a> &middot;
+    <a href="https://github.com/VizuaraAI/unit-distance">GitHub</a> &middot;
+    <a href="https://research.vizuara.ai">research.vizuara.ai</a> &middot;
+    research@vizuara.com</div>
+</footer>
+
+<script>
+/* ============================================================ shared engine */
+const C = {slate:'#155e8c', hot:'#b3006b', shelf:'#c0641a', good:'#1c7a55',
+  ink:'#16130d', ink2:'#3a352b', muted:'#6d665a', faint:'#a49c8c',
+  line:'#e7e2d5', line2:'#d9d3c3', paper:'#fcfbf7', panel:'#ffffff', sink:'#f6f4ec'};
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, parent){
+  const n = document.createElementNS(NS, tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(n);
+  return n;
+}
+function txt(parent, x, y, s, attrs){
+  const t = el('text', Object.assign({x, y, fill:C.ink2, 'font-size':14}, attrs||{}), parent);
+  t.textContent = s; return t;
+}
+function svgIn(box, w, h, minW){
+  const scroll = document.createElement('div');
+  scroll.className = 'chart-scroll'; box.appendChild(scroll);
+  const s = el('svg', {viewBox:`0 0 ${w} ${h}`, role:'img'}, scroll);
+  s.style.width = '100%'; s.style.height = 'auto'; s.style.minWidth = (minW||640) + 'px';
+  return s;
+}
+function tween(dur, fn, done){
+  if (REDUCED){ fn(1); if(done) done(); return; }
+  const t0 = performance.now();
+  (function step(now){
+    const p = Math.min(1, (now - t0)/dur);
+    fn(1 - Math.pow(1-p, 3));
+    if (p < 1) requestAnimationFrame(step); else if (done) done();
+  })(t0);
+}
+const replayReg = new Map();
+const onSeen = (node, fn) => {
+  if (!replayReg.has(node)) replayReg.set(node, []);
+  replayReg.get(node).push(fn);
+  if (REDUCED){ fn(); return; }
+  new IntersectionObserver((es, ob) => {
+    es.forEach(e => { if (e.isIntersecting){ ob.disconnect(); fn(); } });
+  }, {threshold:.35}).observe(node);
+};
+function makeReplay(node, fn){
+  if (REDUCED) return;
+  const b = document.createElement('button');
+  b.className = 'replay'; b.textContent = 'replay'; b.onclick = fn;
+  node.appendChild(b);
+}
+function legend(id, items){
+  const n = document.getElementById(id);
+  if (!n) return;
+  items.forEach(([name, color, dash]) => {
+    const s = document.createElement('span');
+    const i = document.createElement('i');
+    if (dash === 'dot') i.className = 'dotk';
+    i.style.background = color;
+    if (dash === true) i.style.background = `repeating-linear-gradient(90deg,${color} 0 4px,transparent 4px 7px)`;
+    s.appendChild(i); s.appendChild(document.createTextNode(name)); n.appendChild(s);
+  });
+}
+function drawLine(path, delay){
+  if (REDUCED) return;
+  const L = path.getTotalLength();
+  path.style.transition = 'none';
+  path.style.strokeDasharray = L; path.style.strokeDashoffset = L;
+  path.getBoundingClientRect();
+  path.style.transition = `stroke-dashoffset 1.2s ease ${delay||0}ms`;
+  path.style.strokeDashoffset = 0;
+}
+
+/* ============================================================ 1. unit-distance graph */
+(function(){
+  const box = document.getElementById('fig-graph');
+  const W=960,H=510; const svg=svgIn(box,W,H,720);
+  const cols=11, rows=7, Hy=Math.sqrt(3)/2;
+  const pts=[]; for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)pts.push([c+(r%2)*0.5, r*Hy]);
+  const edges=[]; for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+    const dx=pts[i][0]-pts[j][0], dy=pts[i][1]-pts[j][1];
+    if(Math.abs(dx*dx+dy*dy-1)<1e-6) edges.push([i,j]);
+  }
+  const s=72, ox=W/2-(cols-0.5)*s/2, oy=96;
+  const X=p=>ox+p[0]*s, Y=p=>oy+p[1]*s;
+  const lineEls=edges.map(([i,j])=>el('line',{x1:X(pts[i]),y1:Y(pts[i]),x2:X(pts[i]),y2:Y(pts[i]),
+    stroke:C.slate,'stroke-width':2,'stroke-linecap':'round',opacity:.5},svg));
+  const dotEls=pts.map(p=>el('circle',{cx:X(p),cy:Y(p),r:0,fill:C.ink},svg));
+  const counter=txt(svg,30,52,'0',{'text-anchor':'start','font-size':44,fill:C.slate,'font-weight':700,class:'num'});
+  txt(svg,32,74,'UNIT DISTANCES',{'text-anchor':'start','font-size':13,fill:C.faint,'letter-spacing':2});
+  function reset(){ dotEls.forEach(d=>d.setAttribute('r',0));
+    lineEls.forEach((l,k)=>{l.setAttribute('x2',X(pts[edges[k][0]]));l.setAttribute('y2',Y(pts[edges[k][0]]));});
+    counter.textContent='0'; }
+  function play(){
+    reset();
+    dotEls.forEach((d,i)=>setTimeout(()=>tween(280,q=>d.setAttribute('r',4.6*q)), i*7));
+    const t0=520;
+    lineEls.forEach((l,k)=>{
+      const [i,j]=edges[k];
+      setTimeout(()=>tween(260,q=>{
+        l.setAttribute('x2',X(pts[i])+(X(pts[j])-X(pts[i]))*q);
+        l.setAttribute('y2',Y(pts[i])+(Y(pts[j])-Y(pts[i]))*q);
+      },()=>{counter.textContent=String(k+1);}), t0+k*11);
+    });
+  }
+  makeReplay(box,play);
+  onSeen(box,()=>{ if(REDUCED){ dotEls.forEach(d=>d.setAttribute('r',4.6)); lineEls.forEach((l,k)=>{const[i,j]=edges[k];l.setAttribute('x2',X(pts[j]));l.setAttribute('y2',Y(pts[j]));}); counter.textContent=String(edges.length);} else play(); });
+})();
+
+/* ============================================================ 2. sum of two squares (interactive) */
+(function(){
+  const box=document.getElementById('fig-sos');
+  const W=960,H=470; const svg=svgIn(box,W,H,700);
+  const cx=300, cy=H/2, cell=30, R=6; // grid radius in cells
+  // grid
+  for(let gx=-R;gx<=R;gx++)for(let gy=-R;gy<=R;gy++){
+    el('circle',{cx:cx+gx*cell,cy:cy-gy*cell,r:2.2,fill:C.line2},svg);
+  }
+  el('line',{x1:cx-R*cell,y1:cy,x2:cx+R*cell,y2:cy,stroke:C.line,'stroke-width':1},svg);
+  el('line',{x1:cx,y1:cy-R*cell,x2:cx,y2:cy+R*cell,stroke:C.line,'stroke-width':1},svg);
+  const circle=el('circle',{cx,cy,r:0,fill:'none',stroke:C.slate,'stroke-width':2},svg);
+  const hitsG=el('g',{},svg);
+  const centerDot=el('circle',{cx,cy,r:5,fill:C.ink},svg);
+  // readout
+  const nlab=txt(svg,560,150,'',{'font-size':30,fill:C.ink,class:'num'});
+  const rlab=txt(svg,560,214,'',{'font-size':46,fill:C.slate,'font-weight':700,class:'num'});
+  txt(svg,560,240,'unit-distance neighbors',{'font-size':15,fill:C.muted});
+  const factlab=txt(svg,560,290,'',{'font-size':17,fill:C.ink2,class:'num'});
+  const replab=txt(svg,560,320,'',{'font-size':15,fill:C.muted});
+  function reps(N){ const out=[]; const M=Math.ceil(Math.sqrt(N));
+    for(let a=-M;a<=M;a++)for(let b=-M;b<=M;b++) if(a*a+b*b===N) out.push([a,b]); return out; }
+  function factor(N){ let n=N,f=[]; for(let p=2;p*p<=n;p++){let e=0;while(n%p===0){n/=p;e++;} if(e)f.push([p,e]);} if(n>1)f.push([n,1]); return f; }
+  function factStr(N){ if(N===1) return '1'; return factor(N).map(([p,e])=>e>1?p+'^'+e:''+p).join(' · '); }
+  // controls
+  const ui=document.createElement('div');
+  ui.className='widgetui';
+  ui.innerHTML='<label>squared distance N = <span id="sosN" class="mono" style="color:#155e8c;font-weight:700"></span>'+
+    '<input id="sosR" type="range" min="1" max="36" step="1" value="25"></label>'+
+    '<span class="presets">'+
+    '<button data-n="1">1</button><button data-n="5">5</button>'+
+    '<button data-n="25">25</button><button data-n="65">65</button>'+
+    '<button data-n="325">325</button><button data-n="1105">1105</button></span>';
+  box.appendChild(ui);
+  // slider maps 1..36 -> N so the circle stays on-grid; presets can exceed and just rescale
+  const rng=ui.querySelector('#sosR'), nspan=ui.querySelector('#sosN');
+  function drawFit(N){
+    // choose cell so radius <= 190px
+    const rr=Math.sqrt(N); const c=Math.min(30, 185/rr);
+    // redraw grid-independent: just circle + hits using scaled c
+    circle.setAttribute('r',rr*c);
+    hitsG.innerHTML='';
+    const hs=reps(N);
+    hs.forEach(([a,b])=>{ el('line',{x1:cx,y1:cy,x2:cx+a*c,y2:cy-b*c,stroke:C.slate,'stroke-width':1,opacity:.32},hitsG);
+      el('circle',{cx:cx+a*c,cy:cy-b*c,r:Math.max(3,6*Math.min(1,30/ (rr*c) *3)),fill:C.slate,stroke:C.panel,'stroke-width':1.4},hitsG); });
+    nlab.textContent='N = '+N;
+    rlab.textContent='r₂(N) = '+hs.length;
+    factlab.textContent=N+' = '+factStr(N);
+    replab.textContent= hs.length? ('e.g. '+hs.filter(([a,b])=>a>=0&&b>=0&&a>=b).slice(0,2).map(([a,b])=>a+'²+'+b+'²').join(' = ')) : 'no way to write it as a sum of two squares';
+    nspan.textContent=N;
+  }
+  rng.addEventListener('input',e=>{ drawFit(+e.target.value); });
+  ui.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ const N=+b.dataset.n; rng.value=Math.min(36,N); drawFit(N); }));
+  drawFit(25);
+})();
+
+/* ============================================================ 3. bounds landscape */
+(function(){
+  legend('fig-bounds-legend',[['proven ceiling n^4/3',C.ink2,true],['Erdős grid & conjecture ~ n',C.muted],['the disproof, above n',C.slate]]);
+  const box=document.getElementById('fig-bounds');
+  const W=960,H=470,p={l:70,r:40,t:40,b:56}; const svg=svgIn(box,W,H,700);
+  const LX=[1,6], LY=[0.6,8.4];
+  const xm=lx=>p.l+(lx-LX[0])/(LX[1]-LX[0])*(W-p.l-p.r);
+  const ym=ly=>H-p.b-(ly-LY[0])/(LY[1]-LY[0])*(H-p.t-p.b);
+  el('line',{x1:p.l,y1:H-p.b,x2:W-p.r,y2:H-p.b,stroke:C.line2},svg);
+  el('line',{x1:p.l,y1:H-p.b,x2:p.l,y2:p.t,stroke:C.line2},svg);
+  txt(svg,W-p.r,H-p.b+34,'number of points, n (log)',{'text-anchor':'end',fill:C.muted,'font-size':13});
+  txt(svg,p.l,p.t-14,'unit distances (log)',{fill:C.muted,'font-size':13});
+  const mk=f=>{let d='';for(let lx=LX[0];lx<=LX[1]+1e-9;lx+=0.1)d+=(lx===LX[0]?'M':'L')+xm(lx).toFixed(1)+','+ym(f(lx)).toFixed(1);return d;};
+  const conj=lx=>lx, ceil=lx=>4/3*lx, truth=lx=>lx+0.34;
+  // shaded gap
+  el('path',{d:mk(conj)+'L'+xm(6)+','+ym(ceil(6))+ (()=>{let d='';for(let lx=6;lx>=1;lx-=0.1)d+='L'+xm(lx).toFixed(1)+','+ym(ceil(lx)).toFixed(1);return d;})() +'Z',fill:C.slate,opacity:.06},svg);
+  const pc=el('path',{d:mk(ceil),fill:'none',stroke:C.ink2,'stroke-width':2.6,'stroke-dasharray':'2 8','stroke-linecap':'round'},svg);
+  const pj=el('path',{d:mk(conj),fill:'none',stroke:C.muted,'stroke-width':2.6,'stroke-linecap':'round'},svg);
+  const pt=el('path',{d:mk(truth),fill:'none',stroke:C.slate,'stroke-width':3.4,'stroke-linecap':'round'},svg);
+  const dot=el('circle',{cx:xm(5.2),cy:ym(truth(5.2)),r:0,fill:C.slate},svg);
+  txt(svg,xm(6)-4,ym(ceil(6))-12,'n^4/3',{'text-anchor':'end','font-size':15,fill:C.ink2,'font-weight':600,class:'num'});
+  txt(svg,xm(6)-4,ym(conj(6))+34,'~ n',{'text-anchor':'end','font-size':15,fill:C.muted,'font-weight':600,class:'num'});
+  const tl=txt(svg,xm(3.1),ym(truth(3.1))-22,'the truth is up here',{'text-anchor':'middle','font-size':15,fill:C.slate,'font-weight':700,opacity:0});
+  function play(){
+    drawLine(pc,0); drawLine(pj,150);
+    setTimeout(()=>{ drawLine(pt,0); tween(500,q=>dot.setAttribute('r',6*q)); tween(700,q=>tl.setAttribute('opacity',q)); },1400);
+  }
+  makeReplay(box,play);
+  onSeen(box,()=>{ if(!REDUCED) play(); else tl.setAttribute('opacity',1); });
+})();
+
+/* ============================================================ 4. shadow projection */
+(function(){
+  const box=document.getElementById('fig-shadow');
+  const W=960,H=440; const svg=svgIn(box,W,H,720);
+  const ox=150,oy=90,ax=[110,16],bx=[42,74],cols=7,rows=4,yb=350;
+  const P=[]; for(let j=0;j<rows;j++)for(let i=0;i<cols;i++)P.push([ox+i*ax[0]+j*bx[0], oy+i*ax[1]+j*bx[1]]);
+  txt(svg,ox,oy-26,'a lattice in a higher dimension',{fill:C.muted,'font-size':14,class:'num'});
+  el('line',{x1:70,y1:yb,x2:W-60,y2:yb,stroke:C.line2,'stroke-width':2},svg);
+  txt(svg,W-60,yb+30,'the flat page',{'text-anchor':'end',fill:C.muted,'font-size':13});
+  const drops=P.map(pp=>el('line',{x1:pp[0],y1:pp[1],x2:pp[0],y2:pp[1],stroke:C.slate,'stroke-width':1,opacity:.18},svg));
+  const land=P.map(pp=>el('circle',{cx:pp[0],cy:yb,r:0,fill:C.slate},svg));
+  const top=P.map(pp=>el('circle',{cx:pp[0],cy:pp[1],r:0,fill:C.ink},svg));
+  function play(){
+    top.forEach((d,i)=>setTimeout(()=>tween(260,q=>d.setAttribute('r',5*q)), i*22));
+    const t0=cols*rows*22+250;
+    P.forEach((pp,i)=>setTimeout(()=>{
+      tween(520,q=>drops[i].setAttribute('y2',pp[1]+(yb-pp[1])*q));
+      tween(520,q=>land[i].setAttribute('r',4.4*q));
+    }, t0+i*26));
+  }
+  makeReplay(box,play);
+  onSeen(box,()=>{ if(REDUCED){ top.forEach(d=>d.setAttribute('r',5)); P.forEach((pp,i)=>{drops[i].setAttribute('y2',yb);land[i].setAttribute('r',4.4);}); } else play(); });
+})();
+
+/* ============================================================ 5. richness by degree */
+(function(){
+  const box=document.getElementById('fig-richness');
+  const W=960,H=430,p={l:80,r:60,t:44,b:56}; const svg=svgIn(box,W,H,700);
+  const gx=x=>p.l+x*(W-p.l-p.r), gy=y=>H-p.b-y*(H-p.t-p.b);
+  el('line',{x1:p.l,y1:H-p.b,x2:W-p.r,y2:H-p.b,stroke:C.line2},svg);
+  el('line',{x1:p.l,y1:H-p.b,x2:p.l,y2:p.t,stroke:C.line2},svg);
+  txt(svg,W-p.r,H-p.b+34,'degree of the number system',{'text-anchor':'end',fill:C.muted,'font-size':13});
+  txt(svg,p.l,p.t-16,'ways to write the analog of a sum of two squares',{fill:C.muted,'font-size':13});
+  const whole=x=>0.08+0.2*x, field=x=>(Math.exp(3.3*x)-1)/(Math.exp(3.3)-1);
+  const mk=f=>{let d='';for(let x=0;x<=1.0001;x+=0.02)d+=(x===0?'M':'L')+gx(x).toFixed(1)+','+gy(f(x)).toFixed(1);return d;};
+  const pw=el('path',{d:mk(whole),fill:'none',stroke:C.shelf,'stroke-width':3.4,'stroke-linecap':'round'},svg);
+  const pf=el('path',{d:mk(field),fill:'none',stroke:C.slate,'stroke-width':4,'stroke-linecap':'round'},svg);
+  const lw=txt(svg,gx(1)-6,gy(whole(1))-16,'ordinary whole numbers · a slow trickle',{'text-anchor':'end','font-size':14,fill:C.shelf,opacity:0});
+  const lf=txt(svg,gx(0.66),gy(field(0.66)),'a class field tower · exponential',{'text-anchor':'end','font-size':14,fill:C.slate,'font-weight':600,opacity:0});
+  function play(){ drawLine(pw,0); setTimeout(()=>tween(500,q=>lw.setAttribute('opacity',q)),700);
+    setTimeout(()=>{drawLine(pf,0); setTimeout(()=>tween(500,q=>lf.setAttribute('opacity',q)),700);},900); }
+  makeReplay(box,play);
+  onSeen(box,()=>{ if(!REDUCED) play(); else { lw.setAttribute('opacity',1); lf.setAttribute('opacity',1);} });
+})();
+
+/* ============================================================ film facade */
+(function(){
+  const f=document.getElementById('filmframe');
+  if(!f) return;
+  f.addEventListener('click',()=>{
+    if(f.classList.contains('live')) return;
+    f.classList.add('live');
+    const v=document.createElement('video');
+    v.src=f.dataset.src; v.controls=true; v.autoplay=true; v.playsInline=true;
+    if(f.dataset.poster) v.poster=f.dataset.poster;
+    f.innerHTML=''; f.appendChild(v);
+  });
+})();
+
+/* ============================================================ auto replay + progress */
+(function(){
+  if(!REDUCED) replayReg.forEach((fns,node)=>{ if(!node.querySelector('.replay')) makeReplay(node,()=>fns.forEach(f=>f())); });
+})();
+(function(){
+  const bar=document.getElementById('progress');
+  addEventListener('scroll',()=>{ const h=document.documentElement;
+    bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'; },{passive:true});
+})();
+</script>
+</body>
+</html>
